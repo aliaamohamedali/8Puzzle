@@ -13,29 +13,35 @@ import java.util.LinkedList;
  *
  * @author Abd El Rahman
  */
-public class Board implements Comparable{
+public class Board implements Comparable {
+    
+    
+    public static final Boolean MANHATTAN = true;
+    public static final Boolean EUCLIDIAN = false;
+    public static Boolean heuristic = MANHATTAN;
 
     private static final int[][] GOAL = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}; // ALIAA's IDEA
-    
+
     private int depth = 0;
     private int cost;
-    
+
     private int[][] board = new int[3][3];
     private Point zeroIndex = new Point();
-    private String previousMove = "" ;
+    private String previousMove = "";
     private Board parent = null;
     private Board up = null;
     private Board down = null;
     private Board left = null;
     private Board right = null;
 
-
     public Board(int[][] board) {
         //this.board = board;
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 this.board[i][j] = board[i][j];
-            
+            }
+        }
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (board[i][j] == 0) {
@@ -45,23 +51,27 @@ public class Board implements Comparable{
                 }
             }
         }
-        this.depth =0;
+        this.depth = 0;
     }
-    
-    public LinkedList<Board> getNeighbours(){
+
+    public LinkedList<Board> getNeighbours() {
         LinkedList<Board> neighbours = new LinkedList<>();
-        
-        if (setUp())
+
+        if (setUp()) {
             neighbours.add(up);
-        if (setDown())
+        }
+        if (setDown()) {
             neighbours.add(down);
-        if (setLeft())
+        }
+        if (setLeft()) {
             neighbours.add(left);
-        if (setRight())
+        }
+        if (setRight()) {
             neighbours.add(right);
-        
+        }
+
         return neighbours;
-        
+
     }
 
     private boolean setUp() {
@@ -72,10 +82,10 @@ public class Board implements Comparable{
             up.zeroIndex.x--;
             up.previousMove = "UP";
             up.parent = this;
-            
-            up.depth = this.depth+1;
+
+            up.depth = this.depth + 1;
             up.setCost();
-            
+
             return true;
         }
         return false;
@@ -89,10 +99,10 @@ public class Board implements Comparable{
             down.zeroIndex.x++;
             down.previousMove = "DOWN";
             down.parent = this;
-                        
-            down.depth = this.depth+1;
+
+            down.depth = this.depth + 1;
             down.setCost();
-            
+
             return true;
         }
         return false;
@@ -106,10 +116,10 @@ public class Board implements Comparable{
             right.zeroIndex.y++;
             right.previousMove = "RIGHT";
             right.parent = this;
-                        
-            right.depth = this.depth+1;
+
+            right.depth = this.depth + 1;
             right.setCost();
-            
+
             return true;
         }
         return false;
@@ -123,8 +133,8 @@ public class Board implements Comparable{
             left.zeroIndex.y--;
             left.previousMove = "LEFT";
             left.parent = this;
-                    
-            left.depth = this.depth+1;
+
+            left.depth = this.depth + 1;
             left.setCost();
 
             return true;
@@ -167,11 +177,14 @@ public class Board implements Comparable{
     public int getCost() {
         return cost;
     }
-    
+
     public void setCost() {
-        this.cost = this.depth + this.getManhatanDistance();
+        if (heuristic) {
+            this.cost = this.depth + this.getManhatanDistance();
+        } else {
+            this.cost = this.depth + this.getEuclidianDistance();
+        }
     }
-    
 
     public int getManhatanDistance() {
 
@@ -186,12 +199,25 @@ public class Board implements Comparable{
         return distance;
     }
 
+    public int getEuclidianDistance() {
+        int distance = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (this.board[i][j] != i * 3 + j) {
+                    distance += Math.sqrt(Math.pow(i - this.board[i][j] / 3, 2) + Math.pow(j - this.board[i][j] % 3, 2));
+                }
+            }
+        }
+        return distance;
+    }
+
     @Override
-    public boolean equals(Object me){
-        if (me.getClass() != Board.class)
+    public boolean equals(Object me) {
+        if (me.getClass() != Board.class) {
             return false;
-        
-        return Arrays.deepEquals(((Board)me).board, this.board);
+        }
+
+        return Arrays.deepEquals(((Board) me).board, this.board);
     }
 
     @Override
@@ -200,16 +226,16 @@ public class Board implements Comparable{
         hash = 97 * hash + Arrays.deepHashCode(this.board);
         return hash;
     }
-    
+
     @Override
-    public int compareTo(Object o){
-        if (this.cost == ((Board)o).cost) {
-                return 0;
-            } else if (this.cost > ((Board)o).cost) {
-                return 1;
-            } else {
-                return -1;
-            }
+    public int compareTo(Object o) {
+        if (this.cost == ((Board) o).cost) {
+            return 0;
+        } else if (this.cost > ((Board) o).cost) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
-    
+
 }

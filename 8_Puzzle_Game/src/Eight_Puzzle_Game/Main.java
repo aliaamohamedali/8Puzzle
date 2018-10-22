@@ -5,7 +5,9 @@
  */
 package Eight_Puzzle_Game;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 import javax.swing.JLabel;
 
@@ -19,17 +21,25 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Animation x = new Animation();
-        x.jLabel0t(")");
-        x.draw();
+        /* Animation x = new Animation();
+        x.draw();*/
+
+        Scanner s = new Scanner(System.in);
+        String[] input = s.nextLine().split(",");
         
-        int[][] table = {{1, 2, 5}, {3, 4, 0}, {6, 7, 8}};
+        int[][] table = {{Integer.parseInt(input[0]), Integer.parseInt(input[1]), Integer.parseInt(input[2])},
+                         {Integer.parseInt(input[3]), Integer.parseInt(input[4]), Integer.parseInt(input[5])}, 
+                         {Integer.parseInt(input[6]), Integer.parseInt(input[7]), Integer.parseInt(input[8])}};
+        
         int[][] goal = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
         Board initialState = new Board(table);
         Board goalState = new Board(goal);
-
         AI solver = new AI();
-        solver.aStar(initialState, goalState);
+        
+        boolean success = solver.aStar(initialState, goalState, Board.MANHATTAN);
+        if (!success)
+            System.out.println("Failed To Reach Goal");
+        
 
     }
 
